@@ -44,3 +44,7 @@ function redireccionar() {
     window.location="Formulario/FormularioTareas.html";
 
 }
+function redireccionar2() {
+    window.location="Api/IndexApi.html";
+
+}
