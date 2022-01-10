@@ -1,50 +1,95 @@
+//llama al formulario y llama la funcion saveTask (Guardar tarea) mediante submit en un evento
+document.getElementById('formTask').addEventListener('submit', saveTask); 
 
-window.addEventListener('DOMContentLoaded', event => {
+//funcion traer
+function saveTask(e) 
+{
+  //guarda el titulo dentro de la variable title
+  let title = document.getElementById('title').value; //id="title" input
+  //guarda un texto (descripcion)dentro de la variable description
+  let description = document.getElementById('description').value;// id="description" tetxarea
+  console.log(description)
 
-    // Navbar shrink function
-    var navbarShrink = function () {
-        const navbarCollapsible = document.body.querySelector('#mainNav');
-        if (!navbarCollapsible) {
-            return;
-        }
-        if (window.scrollY === 0) {
-            navbarCollapsible.classList.remove('navbar-shrink')
-        } else {
-            navbarCollapsible.classList.add('navbar-shrink')
-        }
+  //objeto
+  let task = {
+    title,
+    description
+  };
+  
+  //Nota: si localstorage esta vacio
+  //si no hay tareas
+  if(localStorage.getItem('tasks') === null) {
+    let tasks = [];
+    tasks.push(task); //Llena el arreglo
+  //almacena un dato en tasks y convierte el objeto task en un string
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+  } else {//caso contrario si existen tareas
+    //obtiene las tareas alamacenadas en el localStorage 
+    //y las alamacena e un variable
+    let tasks = JSON.parse(localStorage.getItem('tasks'));
+    //actualiza a traves del metodo push
+    tasks.push(task);
+    //almacena de nuevo
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+  }
 
-    };
+  getTasks(); //metodo que obtiene las tareas (linea 58)
+  document.getElementById('formTask').reset();
 
-    // Shrink the navbar 
-    navbarShrink();
+  //previene el comportamiento por defecto
+  e.preventDefault();
+}
 
-    // Shrink the navbar when page is scrolled
-    document.addEventListener('scroll', navbarShrink);
+function deleteTask(title) {
+  console.log(title)
+  let tasks = JSON.parse(localStorage.getItem('tasks'));
+  for(let i = 0; i < tasks.length; i++) {
+    if(tasks[i].title == title) {
+      tasks.splice(i, 1);
+    }
+  }
+  
+  localStorage.setItem('tasks', JSON.stringify(tasks));
+  getTasks();
+}
 
-    // Activate Bootstrap scrollspy on the main nav element
-    const mainNav = document.body.querySelector('#mainNav');
-    if (mainNav) {
-        new bootstrap.ScrollSpy(document.body, {
-            target: '#mainNav',
-            offset: 72,
-        });
-    };
+//Hara una consulta en el localstorage, teniendo los datos,
+// los mostrara en pantalla
+function getTasks() {
+  //obtiene las tareas y las covierte a json
+  let tasks = JSON.parse(localStorage.getItem('tasks'));
+  //obtiene el div tasks
+  let tasksView = document.getElementById('tasks');
+  tasksView.innerHTML = '';//limpia el formulario
 
-    // Collapse responsive navbar when toggler is visible
-    const navbarToggler = document.body.querySelector('.navbar-toggler');
-    const responsiveNavItems = [].slice.call(
-        document.querySelectorAll('#navbarResponsive .nav-link')
-    );
-    
+  //for para recorrer el arreglo
+  for(let i = 0; i < tasks.length; i++) {
+    let title = tasks[i].title;
+    let description = tasks[i].description;
+    //vista para mostrar el arreglo
+    tasksView.innerHTML += `<div class="card mb-3">
+        <div class="card-body">
+          <p>${title} - ${description}
+          <a href="#" onclick="deleteTask('${title}')" class="btn btn-danger ml-2 btn-sm">Eliminar</a>
+          </p>
+        </div>
+      </div>`;
+  }
+}
 
-});
+//inicia apenas se ejecute el codigo, mostrando las tareas previamente guardadas
+getTasks();
 
 
+
+
+
+//----------------------------------------- Funciones para redirecionar ------------------------------------------------------
 function redireccionar() {
     window.location="Formulario/FormularioTareas.html";
 
 }
 function redireccionar2() {
-    window.location="Api/IndexApi.html";
+    window.location="Api/IndexApi.htmlr";
 
 }
